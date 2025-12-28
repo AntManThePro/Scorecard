@@ -77,7 +77,8 @@ function App() {
   };
 
   const calculateAverage = (score) => {
-    const total = score.attendance + score.jobPerformance + score.extraFactor;
+    const extraFactorValue = score.extraFactor || 0;
+    const total = score.attendance + score.jobPerformance + extraFactorValue;
     return (total / 3).toFixed(2);
   };
 

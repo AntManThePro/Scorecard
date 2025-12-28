@@ -26,12 +26,14 @@ app.post('/api/scores', (req, res) => {
     return res.status(400).json({ error: 'Name, attendance, and job performance are required' });
   }
   
+  const parsedExtraFactor = extraFactor !== undefined ? parseFloat(extraFactor) : 0;
+  
   const newScore = {
     id: nextId++,
     name,
     attendance: parseFloat(attendance),
     jobPerformance: parseFloat(jobPerformance),
-    extraFactor: extraFactor !== undefined ? parseFloat(extraFactor) : 0,
+    extraFactor: isNaN(parsedExtraFactor) ? 0 : parsedExtraFactor,
     notes: notes || '',
     timestamp: new Date().toISOString()
   };
