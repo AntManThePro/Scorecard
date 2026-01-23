@@ -1,6 +1,8 @@
 # Scorecard
 
-A simple scorecard web application for tracking performance metrics.
+A simple, backend-driven scorecard web application for tracking performance metrics.
+
+> **Note**: This is a basic implementation with a REST API backend. If you're looking for a more feature-rich solution with data visualization, role-based access control, and advanced analytics, check out [scorecard-dashboard](https://github.com/AntManThePro/scorecard-dashboard).
 
 ## Features
 
@@ -167,6 +169,33 @@ Health check endpoint.
 - Scores are stored in memory, so they will be lost when the server restarts
 - For production use, consider adding a database (MongoDB, PostgreSQL, etc.)
 - The "Extra Factor" field is a placeholder that can be customized for specific use cases
+
+## Related Projects
+
+**Looking for more features?** Check out [scorecard-dashboard](https://github.com/AntManThePro/scorecard-dashboard) - a feature-rich alternative with:
+- Data visualization with charts
+- Role-based access control
+- Weekly tracking and historical snapshots
+- CSV export capabilities
+- Mobile-first design
+- No backend required (client-side only)
+
+## Comparison: When to Use Which
+
+### Use This Repository (Scorecard) When:
+- You need a simple REST API for scorecard data
+- You want to integrate with other backend systems
+- You prefer a React-based frontend
+- You plan to add database persistence later
+- You need programmatic API access to score data
+
+### Use [scorecard-dashboard](https://github.com/AntManThePro/scorecard-dashboard) When:
+- You need data visualization and charts
+- You want role-based access control
+- You need to track daily/weekly performance over time
+- You want to export data to CSV
+- You prefer a client-side only solution (no backend setup)
+- You want to deploy as a static site (e.g., GitHub Pages)
 
 ## License
 
