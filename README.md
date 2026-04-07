@@ -99,20 +99,8 @@ The frontend will run on `http://localhost:5173` (or another port if 5173 is bus
 ### GET /api/scores
 Returns all scores stored in memory.
 
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "John Doe",
-    "attendance": 95,
-    "jobPerformance": 88,
-    "extraFactor": 92,
-    "notes": "Great performance this month",
-    "timestamp": "2024-01-15T10:30:00.000Z"
-  }
-]
-```
+### GET /api/scores/:id
+Returns a single score by ID.
 
 ### POST /api/scores
 Add a new score entry.
@@ -128,18 +116,24 @@ Add a new score entry.
 }
 ```
 
-**Response:**
+All numeric fields must be between 0 and 100.
+
+### PUT /api/scores/:id
+Update an existing score. All fields are optional — only provided fields are updated.
+
+**Request Body** (all fields optional):
 ```json
 {
-  "id": 1,
   "name": "John Doe",
-  "attendance": 95,
-  "jobPerformance": 88,
-  "extraFactor": 92,
-  "notes": "Optional notes",
-  "timestamp": "2024-01-15T10:30:00.000Z"
+  "attendance": 97,
+  "jobPerformance": 90,
+  "extraFactor": 85,
+  "notes": "Updated notes"
 }
 ```
+
+### DELETE /api/scores/:id
+Remove a score entry. Returns HTTP 204 on success.
 
 ### GET /api/health
 Health check endpoint.
