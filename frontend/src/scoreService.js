@@ -22,12 +22,14 @@ const DEMO_SCORES = [
   },
 ]
 
-const configuredApiUrl = import.meta.env?.VITE_API_URL?.trim()
-const isLocalHost =
-  typeof window !== 'undefined' &&
-  ['localhost', '127.0.0.1'].includes(window.location.hostname)
+const runtimeApiUrl =
+  typeof window !== 'undefined' && typeof window.__SCORECARD_API_URL__ === 'string'
+    ? window.__SCORECARD_API_URL__.trim()
+    : ''
+const configuredApiUrl = import.meta.env?.VITE_API_URL?.trim() ?? ''
+const defaultApiUrl = import.meta.env?.DEV ? DEFAULT_LOCAL_API_URL : ''
 
-export const API_URL = configuredApiUrl || (isLocalHost ? DEFAULT_LOCAL_API_URL : '')
+export const API_URL = runtimeApiUrl || configuredApiUrl || defaultApiUrl
 export const isDemoMode = !API_URL
 
 function validateScoreField(value, fieldName) {

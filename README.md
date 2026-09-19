@@ -40,7 +40,7 @@ The GitHub Pages site builds the React app from `frontend/` and serves it as a s
 - Demo scores are seeded automatically and stored in the browser using `localStorage`
 - Add, edit, and delete actions only affect the browser you are using
 
-If you want the frontend to talk to a deployed backend instead of demo storage, set `VITE_API_URL` to your backend's `/api` base URL before building the frontend.
+If you want the frontend to talk to a deployed backend instead of demo storage, set `VITE_API_URL` to your backend's `/api` base URL before building the frontend. If you need runtime configuration instead, you can define `window.__SCORECARD_API_URL__` before the app loads.
 
 ```bash
 cd frontend
@@ -102,7 +102,7 @@ npm run dev
 
 The frontend will run on `http://localhost:5173` (or another port if 5173 is busy).
 
-When running on localhost, the frontend automatically uses `http://localhost:3001/api` unless `VITE_API_URL` is explicitly set.
+During local Vite development, the frontend automatically uses `http://localhost:3001/api` unless `VITE_API_URL` or `window.__SCORECARD_API_URL__` is explicitly set.
 
 ### Usage
 

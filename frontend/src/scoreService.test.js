@@ -20,18 +20,23 @@ function createLocalStorage(initialState = {}) {
   }
 }
 
-async function loadService(hostname) {
+async function loadService({ apiUrl = '', fetchImpl, hostname = 'scorecard.example' } = {}) {
   globalThis.window = {
+    __SCORECARD_API_URL__: apiUrl,
     location: { hostname },
     localStorage: createLocalStorage(),
   }
+  globalThis.fetch = fetchImpl
 
-  const moduleUrl = new URL(`./scoreService.js?hostname=${hostname}&ts=${Date.now()}`, import.meta.url)
+  const moduleUrl = new URL(
+    `./scoreService.js?hostname=${hostname}&api=${encodeURIComponent(apiUrl)}&ts=${Date.now()}`,
+    import.meta.url,
+  )
   return import(moduleUrl)
 }
 
 test('getScores seeds demo data outside localhost', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   const scores = await service.getScores()
 
@@ -41,13 +46,14 @@ test('getScores seeds demo data outside localhost', async () => {
 })
 
 test('getScores uses the API on localhost', async () => {
-  const service = await loadService('localhost')
   const apiScores = [{ id: 9, name: 'API User', attendance: 80, jobPerformance: 85, extraFactor: 90, notes: '', timestamp: '2026-03-01T00:00:00.000Z' }]
-
-  globalThis.fetch = async () => ({
-    ok: true,
-    status: 200,
-    json: async () => apiScores,
+  const service = await loadService({
+    apiUrl: 'http://localhost:3001/api',
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => apiScores,
+    }),
   })
 
   const scores = await service.getScores()
@@ -58,7 +64,7 @@ test('getScores uses the API on localhost', async () => {
 })
 
 test('createScore persists a validated demo score', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   const createdScore = await service.createScore({
     name: 'Taylor Smith',
@@ -77,7 +83,7 @@ test('createScore persists a validated demo score', async () => {
 })
 
 test('createScore rejects invalid demo data', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   await assert.rejects(
     service.createScore({
@@ -92,7 +98,7 @@ test('createScore rejects invalid demo data', async () => {
 })
 
 test('updateScore updates a demo score and records updatedAt', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   const updatedScore = await service.updateScore(1, {
     name: 'Alex Johnson',
@@ -108,7 +114,7 @@ test('updateScore updates a demo score and records updatedAt', async () => {
 })
 
 test('updateScore reports missing demo records', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   await assert.rejects(
     service.updateScore(999, {
@@ -123,7 +129,7 @@ test('updateScore reports missing demo records', async () => {
 })
 
 test('deleteScore removes a demo record', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   await service.deleteScore(1)
   const remainingScores = await service.getScores()
@@ -133,7 +139,7 @@ test('deleteScore removes a demo record', async () => {
 })
 
 test('deleteScore reports missing demo records', async () => {
-  const service = await loadService('scorecard.example')
+  const service = await loadService()
 
   await assert.rejects(service.deleteScore(999), /Score not found/)
 })

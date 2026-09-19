@@ -122,7 +122,13 @@ function App() {
       <header className="header">
         <h1>Scorecard</h1>
         <p>Track performance metrics</p>
-        <p className={`mode-banner ${isDemoMode ? 'demo' : 'api'}`}>{getStorageMessage()}</p>
+        <p
+          className={`mode-banner ${isDemoMode ? 'demo' : 'api'}`}
+          role="status"
+          aria-live="polite"
+        >
+          {getStorageMessage()}
+        </p>
       </header>
 
       <main className="main-content">
