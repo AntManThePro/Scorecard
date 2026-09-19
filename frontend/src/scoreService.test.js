@@ -45,10 +45,10 @@ test('getScores seeds demo data outside localhost', async () => {
   assert.match(service.getStorageMessage(), /saved in this browser only/i)
 })
 
-test('getScores uses the API on localhost', async () => {
+test('getScores uses the default localhost API when no override is set', async () => {
   const apiScores = [{ id: 9, name: 'API User', attendance: 80, jobPerformance: 85, extraFactor: 90, notes: '', timestamp: '2026-03-01T00:00:00.000Z' }]
   const service = await loadService({
-    apiUrl: 'http://localhost:3001/api',
+    hostname: 'localhost',
     fetchImpl: async () => ({
       ok: true,
       status: 200,
@@ -60,6 +60,24 @@ test('getScores uses the API on localhost', async () => {
 
   assert.equal(service.isDemoMode(), false)
   assert.equal(service.getApiUrl(), 'http://localhost:3001/api')
+  assert.deepEqual(scores, apiScores)
+})
+
+test('runtime API configuration overrides demo mode outside localhost', async () => {
+  const apiScores = [{ id: 10, name: 'Runtime User', attendance: 91, jobPerformance: 93, extraFactor: 95, notes: '', timestamp: '2026-03-02T00:00:00.000Z' }]
+  const service = await loadService({
+    apiUrl: 'https://api.example.com/api',
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => apiScores,
+    }),
+  })
+
+  const scores = await service.getScores()
+
+  assert.equal(service.isDemoMode(), false)
+  assert.equal(service.getApiUrl(), 'https://api.example.com/api')
   assert.deepEqual(scores, apiScores)
 })
 
