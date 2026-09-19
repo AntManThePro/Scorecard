@@ -40,7 +40,7 @@ test('getScores seeds demo data outside localhost', async () => {
 
   const scores = await service.getScores()
 
-  assert.equal(service.isDemoMode, true)
+  assert.equal(service.isDemoMode(), true)
   assert.equal(scores.length, 2)
   assert.match(service.getStorageMessage(), /saved in this browser only/i)
 })
@@ -58,8 +58,8 @@ test('getScores uses the API on localhost', async () => {
 
   const scores = await service.getScores()
 
-  assert.equal(service.isDemoMode, false)
-  assert.equal(service.API_URL, 'http://localhost:3001/api')
+  assert.equal(service.isDemoMode(), false)
+  assert.equal(service.getApiUrl(), 'http://localhost:3001/api')
   assert.deepEqual(scores, apiScores)
 })
 

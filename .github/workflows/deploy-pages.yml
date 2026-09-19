@@ -36,7 +36,7 @@ jobs:
       - name: Build frontend
         working-directory: ./frontend
         env:
-          VITE_PUBLIC_BASE_PATH: /Scorecard/
+          VITE_PUBLIC_BASE_PATH: ${{ format('/{0}/', github.event.repository.name) }}
         run: npm run build
 
       - name: Upload Pages artifact

@@ -22,15 +22,21 @@ const DEMO_SCORES = [
   },
 ]
 
-const runtimeApiUrl =
-  typeof window !== 'undefined' && typeof window.__SCORECARD_API_URL__ === 'string'
-    ? window.__SCORECARD_API_URL__.trim()
-    : ''
-const configuredApiUrl = import.meta.env?.VITE_API_URL?.trim() ?? ''
 const defaultApiUrl = import.meta.env?.DEV ? DEFAULT_LOCAL_API_URL : ''
 
-export const API_URL = runtimeApiUrl || configuredApiUrl || defaultApiUrl
-export const isDemoMode = !API_URL
+export function getApiUrl() {
+  const runtimeApiUrl =
+    typeof window !== 'undefined' && typeof window.__SCORECARD_API_URL__ === 'string'
+      ? window.__SCORECARD_API_URL__.trim()
+      : ''
+  const configuredApiUrl = import.meta.env?.VITE_API_URL?.trim() ?? ''
+
+  return runtimeApiUrl || configuredApiUrl || defaultApiUrl
+}
+
+export function isDemoMode() {
+  return !getApiUrl()
+}
 
 function validateScoreField(value, fieldName) {
   const parsed = Number.parseFloat(value)
@@ -142,24 +148,30 @@ async function readApiResponse(response) {
 }
 
 export function getStorageMessage() {
-  if (isDemoMode) {
+  const apiUrl = getApiUrl()
+
+  if (!apiUrl) {
     return 'Demo mode is active. Scores are seeded with sample data and saved in this browser only.'
   }
 
-  return `API mode is active. The app is using ${API_URL}.`
+  return `API mode is active. The app is using ${apiUrl}.`
 }
 
 export async function getScores() {
-  if (isDemoMode) {
+  const apiUrl = getApiUrl()
+
+  if (!apiUrl) {
     return readDemoScores()
   }
 
-  const response = await fetch(`${API_URL}/scores`)
+  const response = await fetch(`${apiUrl}/scores`)
   return readApiResponse(response)
 }
 
 export async function createScore(payload) {
-  if (isDemoMode) {
+  const apiUrl = getApiUrl()
+
+  if (!apiUrl) {
     const normalized = normalizeScorePayload(payload)
     const scores = readDemoScores()
     const nextId = scores.reduce((maxId, score) => Math.max(maxId, score.id), 0) + 1
@@ -173,7 +185,7 @@ export async function createScore(payload) {
     return newScore
   }
 
-  const response = await fetch(`${API_URL}/scores`, {
+  const response = await fetch(`${apiUrl}/scores`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -183,7 +195,9 @@ export async function createScore(payload) {
 }
 
 export async function updateScore(id, payload) {
-  if (isDemoMode) {
+  const apiUrl = getApiUrl()
+
+  if (!apiUrl) {
     const normalized = normalizeScorePayload(payload)
     const scores = readDemoScores()
     const scoreIndex = scores.findIndex((score) => score.id === id)
@@ -203,7 +217,7 @@ export async function updateScore(id, payload) {
     return updatedScore
   }
 
-  const response = await fetch(`${API_URL}/scores/${id}`, {
+  const response = await fetch(`${apiUrl}/scores/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -213,7 +227,9 @@ export async function updateScore(id, payload) {
 }
 
 export async function deleteScore(id) {
-  if (isDemoMode) {
+  const apiUrl = getApiUrl()
+
+  if (!apiUrl) {
     const scores = readDemoScores()
     const nextScores = scores.filter((score) => score.id !== id)
 
@@ -225,6 +241,6 @@ export async function deleteScore(id) {
     return
   }
 
-  const response = await fetch(`${API_URL}/scores/${id}`, { method: 'DELETE' })
+  const response = await fetch(`${apiUrl}/scores/${id}`, { method: 'DELETE' })
   await readApiResponse(response)
 }
