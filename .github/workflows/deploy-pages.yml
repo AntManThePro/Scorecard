@@ -35,6 +35,8 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
+        env:
+          VITE_PUBLIC_BASE_PATH: /Scorecard/
         run: npm run build
 
       - name: Upload Pages artifact

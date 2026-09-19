@@ -49,6 +49,8 @@ VITE_API_URL=https://your-backend.example.com/api npm run build
 
 Do not hard-code the backend URL in source code.
 
+The repository Pages workflow also sets `VITE_PUBLIC_BASE_PATH=/Scorecard/` at build time so the generated assets work from the project site URL.
+
 ## Getting Started
 
 ### Prerequisites
