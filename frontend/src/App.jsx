@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-
-const API_URL = 'http://localhost:3001/api';
+import {
+  createScore,
+  deleteScore,
+  getScores,
+  getStorageMessage,
+  isDemoMode,
+  updateScore,
+} from './scoreService'
 
 const EMPTY_FORM = {
   name: '',
@@ -25,8 +31,7 @@ function App() {
 
   const fetchScores = async () => {
     try {
-      const response = await fetch(`${API_URL}/scores`);
-      const data = await response.json();
+      const data = await getScores();
       setScores(data);
     } catch (error) {
       console.error('Error fetching scores:', error);
@@ -45,24 +50,13 @@ function App() {
     setMessage('');
 
     try {
-      const response = await fetch(`${API_URL}/scores`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const newScore = await response.json();
-        setScores(prev => [...prev, newScore]);
-        setFormData(EMPTY_FORM);
-        showMessage('Score added successfully!');
-      } else {
-        const error = await response.json();
-        showMessage(`Error: ${error.error}`);
-      }
+      const newScore = await createScore(formData);
+      setScores(prev => [...prev, newScore]);
+      setFormData(EMPTY_FORM);
+      showMessage('Score added successfully!');
     } catch (error) {
       console.error('Error submitting score:', error);
-      showMessage('Error submitting score');
+      showMessage(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -76,16 +70,12 @@ function App() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this score entry?')) return;
     try {
-      const response = await fetch(`${API_URL}/scores/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        setScores(prev => prev.filter(s => s.id !== id));
-        showMessage('Score deleted.');
-      } else {
-        showMessage('Error deleting score');
-      }
+      await deleteScore(id);
+      setScores(prev => prev.filter(s => s.id !== id));
+      showMessage('Score deleted.');
     } catch (error) {
       console.error('Error deleting score:', error);
-      showMessage('Error deleting score');
+      showMessage(`Error: ${error.message}`);
     }
   };
 
@@ -112,23 +102,13 @@ function App() {
 
   const handleEditSubmit = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/scores/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editData),
-      });
-      if (response.ok) {
-        const updated = await response.json();
-        setScores(prev => prev.map(s => s.id === id ? updated : s));
-        cancelEdit();
-        showMessage('Score updated.');
-      } else {
-        const error = await response.json();
-        showMessage(`Error: ${error.error}`);
-      }
+      const updated = await updateScore(id, editData);
+      setScores(prev => prev.map(s => s.id === id ? updated : s));
+      cancelEdit();
+      showMessage('Score updated.');
     } catch (error) {
       console.error('Error updating score:', error);
-      showMessage('Error updating score');
+      showMessage(`Error: ${error.message}`);
     }
   };
 
@@ -142,6 +122,7 @@ function App() {
       <header className="header">
         <h1>Scorecard</h1>
         <p>Track performance metrics</p>
+        <p className={`mode-banner ${isDemoMode ? 'demo' : 'api'}`}>{getStorageMessage()}</p>
       </header>
 
       <main className="main-content">
