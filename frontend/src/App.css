@@ -26,6 +26,26 @@
   color: #888;
 }
 
+.mode-banner {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.mode-banner.demo {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+
+.mode-banner.api {
+  background: rgba(100, 108, 255, 0.15);
+  border: 1px solid rgba(100, 108, 255, 0.35);
+  color: #a5b4fc;
+}
+
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -307,6 +327,14 @@
   .form-section,
   .scores-section {
     background: rgba(0, 0, 0, 0.02);
+  }
+
+  .mode-banner.demo {
+    color: #166534;
+  }
+
+  .mode-banner.api {
+    color: #3730a3;
   }
 
   .score-card {
